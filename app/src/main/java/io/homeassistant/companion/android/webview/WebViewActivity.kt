@@ -134,10 +134,6 @@ class WebViewActivity : AppCompatActivity(), io.homeassistant.companion.android.
         SensorWorker.start(this)
         LocationWorker.start(this)
 
-        val intent = Intent(this, LocationSensorManager::class.java)
-        intent.action = LocationSensorManager.ACTION_REQUEST_LOCATION_UPDATES
-        sendBroadcast(intent)
-
         if (BuildConfig.DEBUG) {
             WebView.setWebContentsDebuggingEnabled(true)
         }
