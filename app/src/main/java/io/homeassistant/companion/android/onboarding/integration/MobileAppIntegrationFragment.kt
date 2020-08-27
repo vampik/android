@@ -27,6 +27,7 @@ import io.homeassistant.companion.android.database.sensor.Sensor
 import io.homeassistant.companion.android.sensors.LocationSensorManager
 import io.homeassistant.companion.android.sensors.PhoneStateSensorManager
 import io.homeassistant.companion.android.sensors.SensorWorker
+import io.homeassistant.companion.android.sensors.LocationWorker
 import javax.inject.Inject
 import kotlinx.android.synthetic.main.fragment_mobile_app_integration.*
 
@@ -170,6 +171,7 @@ class MobileAppIntegrationFragment : Fragment(), MobileAppIntegrationView {
 
     override fun onDestroy() {
         SensorWorker.start(requireContext())
+        LocationWorker.start(requireContext())
         presenter.onFinish()
         super.onDestroy()
     }

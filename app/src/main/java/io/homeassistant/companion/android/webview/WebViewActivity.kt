@@ -61,6 +61,7 @@ import io.homeassistant.companion.android.nfc.NfcSetupActivity
 import io.homeassistant.companion.android.onboarding.OnboardingActivity
 import io.homeassistant.companion.android.sensors.LocationSensorManager
 import io.homeassistant.companion.android.sensors.SensorWorker
+import io.homeassistant.companion.android.sensors.LocationWorker
 import io.homeassistant.companion.android.settings.SettingsActivity
 import io.homeassistant.companion.android.themes.ThemesManager
 import io.homeassistant.companion.android.util.isStarted
@@ -131,6 +132,7 @@ class WebViewActivity : AppCompatActivity(), io.homeassistant.companion.android.
 
         // Start the sensor worker if they start the app. The only other place we start this ia Boot BroadcastReceiver
         SensorWorker.start(this)
+        LocationWorker.start(this)
 
         val intent = Intent(this, LocationSensorManager::class.java)
         intent.action = LocationSensorManager.ACTION_REQUEST_LOCATION_UPDATES
