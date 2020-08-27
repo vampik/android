@@ -27,7 +27,7 @@ class LocationWorker(
                 .setRequiredNetworkType(NetworkType.CONNECTED).build()
 
             val locationWorker =
-                PeriodicWorkRequestBuilder<LocationWorker>(5, TimeUnit.MINUTES)
+                PeriodicWorkRequestBuilder<LocationWorker>(15, TimeUnit.MINUTES)
                     .setConstraints(constraints)
                     .build()
 
