@@ -30,7 +30,7 @@ import kotlinx.coroutines.runBlocking
 class LocationSensorManager : BroadcastReceiver(), SensorManager {
 
     companion object {
-        const val MINIMUM_ACCURACY = 200
+        const val MINIMUM_ACCURACY = 5000
 
         const val ACTION_REQUEST_LOCATION_UPDATES =
             "io.homeassistant.companion.android.background.REQUEST_UPDATES"
