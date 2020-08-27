@@ -86,7 +86,6 @@ class SensorDetailFragment(
 
     private fun refreshSensorData() {
         SensorWorker.start(requireContext())
-        LocationWorker.start(requireContext())
 
         val sensorDao = AppDatabase.getInstance(requireContext()).sensorDao()
         val fullData = sensorDao.getFull(sensorId)

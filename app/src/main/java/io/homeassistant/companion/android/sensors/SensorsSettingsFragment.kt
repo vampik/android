@@ -20,7 +20,6 @@ class SensorsSettingsFragment : PreferenceFragmentCompat() {
     private val refresh = object : Runnable {
         override fun run() {
             SensorWorker.start(requireContext())
-            LocationWorker.start(requireContext())
             val sensorDao = AppDatabase.getInstance(requireContext()).sensorDao()
             SensorReceiver.MANAGERS.forEach { managers ->
                 managers.availableSensors.forEach { basicSensor ->

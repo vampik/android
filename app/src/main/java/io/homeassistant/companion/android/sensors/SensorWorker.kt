@@ -48,6 +48,7 @@ class SensorWorker(
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         Log.d(TAG, "Updating all Sensors.")
         SensorReceiver().updateSensors(appContext, integrationUseCase)
+        SensorReceiver().updateLocationSensor(appContext, integrationUseCase)
         Result.success()
     }
 }
