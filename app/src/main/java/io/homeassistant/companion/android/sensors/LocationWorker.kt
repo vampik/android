@@ -16,22 +16,22 @@ import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class SensorWorker(
+class LocationWorker(
     private val appContext: Context,
     workerParams: WorkerParameters
 ) : CoroutineWorker(appContext, workerParams) {
     companion object {
-        private const val TAG = "SensorWorker"
+        private const val TAG = "LocationWorker"
         fun start(context: Context) {
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED).build()
 
-            val sensorWorker =
-                PeriodicWorkRequestBuilder<SensorWorker>(15, TimeUnit.MINUTES)
+            val locationWorker =
+                PeriodicWorkRequestBuilder<LocationWorker>(15, TimeUnit.MINUTES)
                     .setConstraints(constraints)
                     .build()
 
-            WorkManager.getInstance(context).enqueueUniquePeriodicWork(TAG, ExistingPeriodicWorkPolicy.REPLACE, sensorWorker)
+            WorkManager.getInstance(context).enqueueUniquePeriodicWork(TAG, ExistingPeriodicWorkPolicy.REPLACE, locationWorker)
         }
     }
 
@@ -46,8 +46,7 @@ class SensorWorker(
     }
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
-        Log.d(TAG, "Updating all Sensors.")
-        SensorReceiver().updateSensors(appContext, integrationUseCase)
+        Log.d(TAG, "Updating Location sensor.")
         SensorReceiver().updateLocationSensor(appContext, integrationUseCase)
         Result.success()
     }

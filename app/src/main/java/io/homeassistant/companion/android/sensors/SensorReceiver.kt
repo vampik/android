@@ -28,7 +28,6 @@ class SensorReceiver : BroadcastReceiver() {
             GeocodeSensorManager(),
             LastRebootSensorManager(),
             LightSensorManager(),
-            LocationSensorManager(),
             NetworkSensorManager(),
             NextAlarmManager(),
             PhoneStateSensorManager(),
@@ -105,6 +104,58 @@ class SensorReceiver : BroadcastReceiver() {
                 }
             }
         }
+
+        var success = false
+        try {
+            success = integrationUseCase.updateSensors(enabledRegistrations.toTypedArray())
+        } catch (e: Exception) {
+            Log.e(TAG, "Exception while updating sensors.", e)
+        }
+
+        // We failed to update a sensor, we should re register next time
+        if (!success) {
+            enabledRegistrations.forEach {
+                val sensor = sensorDao.get(it.uniqueId)
+                if (sensor != null) {
+                    sensor.registered = false
+                    sensorDao.update(sensor)
+                }
+            }
+        }
+    }
+
+    suspend fun updateLocationSensor(
+        context: Context,
+        integrationUseCase: IntegrationUseCase
+    ) {
+        val sensorDao = AppDatabase.getInstance(context).sensorDao()
+        val enabledRegistrations = mutableListOf<SensorRegistration<Any>>()
+
+        try {
+            LocationSensorManager().requestSensorUpdate(context)
+        } catch (e: Exception) {
+            Log.e(TAG, "Issue requesting updates for ${LocationSensorManager().name}", e)
+        }
+        LocationSensorManager().availableSensors.forEach { basicSensor ->
+            val fullSensor = sensorDao.getFull(basicSensor.id)
+            val sensor = fullSensor?.sensor
+
+            // Register Sensors if needed
+            if (sensor?.enabled == true && !sensor.registered && !sensor.type.isBlank()) {
+                val reg = fullSensor.toSensorRegistration()
+                try {
+                    integrationUseCase.registerSensor(reg)
+                    sensor.registered = true
+                    sensorDao.update(sensor)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Issue registering sensor: ${reg.uniqueId}", e)
+                }
+            }
+            if (fullSensor != null && sensor?.registered == true) {
+                enabledRegistrations.add(fullSensor.toSensorRegistration())
+            }
+        }
+
 
         var success = false
         try {
