@@ -304,7 +304,7 @@ class LocationSensorManager : BroadcastReceiver(), SensorManager {
         }
         sensorDao.add(Attribute(backgroundLocation.id, "lastAccurateLocationRequest", now.toString(), "string"))
 
-        val maxRetries = 5
+        val maxRetries = 1
         val request = createLocationRequest()
         request.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         request.numUpdates = maxRetries
@@ -318,9 +318,7 @@ class LocationSensorManager : BroadcastReceiver(), SensorManager {
                                 PowerManager.PARTIAL_WAKE_LOCK,
                                 "HomeAssistant::AccurateLocation"
                             )?.apply { acquire(10 * 60 * 1000L /*10 minutes*/) }
-                    var numberCalls = 0
                     override fun onLocationResult(locationResult: LocationResult?) {
-                        numberCalls++
                         Log.d(
                             TAG,
                             "Got single accurate location update: ${locationResult?.lastLocation}"
@@ -334,24 +332,15 @@ class LocationSensorManager : BroadcastReceiver(), SensorManager {
                             locationResult.lastLocation.accuracy <= getMinimumAccuracy() -> {
                                 Log.d(TAG, "Location accurate enough, all done with high accuracy.")
                                 runBlocking { sendLocationUpdate(locationResult.lastLocation) }
-                                if (wakeLock?.isHeld == true) wakeLock.release()
-                            }
-                            numberCalls >= maxRetries -> {
-                                Log.d(
-                                    TAG,
-                                    "No location was accurate enough, sending our last location anyway"
-                                )
-                                if (locationResult.lastLocation.accuracy <= getMinimumAccuracy() * 2)
-                                    runBlocking { sendLocationUpdate(locationResult.lastLocation) }
-                                if (wakeLock?.isHeld == true) wakeLock.release()
                             }
                             else -> {
                                 Log.w(
                                     TAG,
-                                    "Location not accurate enough on retry $numberCalls of $maxRetries"
+                                    "Location not accurate enough."
                                 )
                             }
                         }
+                        if (wakeLock?.isHeld == true) wakeLock.release()
                     }
                 },
                 null
