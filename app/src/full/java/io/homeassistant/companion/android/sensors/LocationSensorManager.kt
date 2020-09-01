@@ -19,8 +19,6 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import io.homeassistant.companion.android.R
 import io.homeassistant.companion.android.common.dagger.GraphComponentAccessor
-import io.homeassistant.companion.android.database.AppDatabase
-import io.homeassistant.companion.android.database.sensor.Attribute
 import io.homeassistant.companion.android.domain.integration.IntegrationUseCase
 import io.homeassistant.companion.android.domain.integration.UpdateLocation
 import javax.inject.Inject
@@ -293,17 +291,6 @@ class LocationSensorManager : BroadcastReceiver(), SensorManager {
             Log.w(TAG, "Not getting single accurate location because of permissions.")
             return
         }
-        val now = System.currentTimeMillis()
-        val sensorDao = AppDatabase.getInstance(latestContext).sensorDao()
-        val fullSensor = sensorDao.getFull(backgroundLocation.id)
-        val latestAccurateLocation = fullSensor?.attributes?.firstOrNull { it.name == "lastAccurateLocationRequest" }?.value?.toLongOrNull() ?: 0L
-        // Only update accurate location at most once a minute
-        if (now < latestAccurateLocation + 60000) {
-            Log.d(TAG, "Not requesting accurate location, last accurate location was too recent")
-            return
-        }
-        sensorDao.add(Attribute(backgroundLocation.id, "lastAccurateLocationRequest", now.toString(), "string"))
-
         val maxRetries = 1
         val request = createLocationRequest()
         request.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
