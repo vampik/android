@@ -29,8 +29,10 @@ android {
         minSdkVersion(Config.Android.minSdk)
         targetSdkVersion(Config.Android.targetSdk)
 
-        versionName = System.getenv("VERSION") ?: "LOCAL"
-        versionCode = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 1
+        val ver = System.getenv("VERSION") ?: "LOCAL"
+        val vCode = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 1
+        versionCode = vCode
+        versionName = "$ver-$vCode"
 
         manifestPlaceholders["sentryRelease"] = "$applicationId@$versionName"
     }
