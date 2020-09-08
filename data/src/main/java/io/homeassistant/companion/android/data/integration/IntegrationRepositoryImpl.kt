@@ -291,7 +291,7 @@ class IntegrationRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getMinimumAccuracy(): Int {
-        return localStorage.getInt(PREF_MINIMUM_ACCURACY) ?: 200
+        return localStorage.getInt(PREF_MINIMUM_ACCURACY) ?: 5000
     }
 
     override suspend fun sessionTimeOut(value: Int) {
