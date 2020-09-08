@@ -18,13 +18,6 @@ class BatterySensorManager : SensorManager {
             "battery",
             "%"
         )
-        private val batteryState = SensorManager.BasicSensor(
-            "battery_state",
-            "sensor",
-            R.string.basic_sensor_name_battery_state,
-            R.string.sensor_description_battery_state,
-            "battery"
-        )
     }
 
     override val enabledByDefault: Boolean
@@ -33,7 +26,7 @@ class BatterySensorManager : SensorManager {
     override val name: Int
         get() = R.string.sensor_name_battery
     override val availableSensors: List<SensorManager.BasicSensor>
-        get() = listOf(batteryLevel, batteryState)
+        get() = listOf(batteryLevel)
 
     override fun requiredPermissions(): Array<String> {
         return emptyArray()
@@ -45,7 +38,6 @@ class BatterySensorManager : SensorManager {
         val intent = context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
         if (intent != null) {
             updateBatteryLevel(context, intent)
-            updateBatteryState(context, intent)
         }
     }
 
@@ -92,32 +84,15 @@ class BatterySensorManager : SensorManager {
         val isCharging = getIsCharging(intent)
         val chargerType = getChargerType(intent)
         val chargingStatus = getChargingStatus(intent)
+        val batteryHealth = getBatteryHealth(intent)
 
         onSensorUpdated(
             context,
             batteryLevel,
             percentage,
             getBatteryIcon(percentage, isCharging, chargerType, chargingStatus),
-            mapOf()
-        )
-    }
-
-    private fun updateBatteryState(context: Context, intent: Intent) {
-        if (!isEnabled(context, batteryState.id))
-            return
-
-        val percentage: Int = getBatteryPercentage(intent)
-        val isCharging = getIsCharging(intent)
-        val chargerType = getChargerType(intent)
-        val chargingStatus = getChargingStatus(intent)
-        val batteryHealth = getBatteryHealth(intent)
-
-        onSensorUpdated(
-            context,
-            batteryState,
-            chargingStatus,
-            getBatteryIcon(percentage, isCharging, chargerType, chargingStatus),
             mapOf(
+                "battery_state" to chargingStatus,
                 "is_charging" to isCharging,
                 "charger_type" to chargerType,
                 "battery_health" to batteryHealth
