@@ -10,7 +10,7 @@ class BatterySensorManager : SensorManager {
 
     companion object {
         private const val TAG = "BatterySensor"
-        private val batteryLevel = SensorManager.BasicSensor(
+        val batteryLevel = SensorManager.BasicSensor(
             "battery_level",
             "sensor",
             R.string.basic_sensor_name_battery_level,

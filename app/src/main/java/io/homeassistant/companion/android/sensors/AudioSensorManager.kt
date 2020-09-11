@@ -10,7 +10,7 @@ class AudioSensorManager : SensorManager {
     companion object {
         private const val TAG = "AudioSensor"
 
-        private val audioSensor = SensorManager.BasicSensor(
+        val audioSensor = SensorManager.BasicSensor(
             "audio_sensor",
             "sensor",
             R.string.sensor_name_audio,
